@@ -152,6 +152,49 @@ export interface AdminListResponse {
   limit: number;    // 每页数量
 }
 
+// 用户KYC类型
+export interface UserKyc {
+  id: number;
+  userId: number;
+  status: 'pending' | 'approved' | 'rejected';
+  documentType: string;
+  documentNumber: string;
+  fullName: string;
+  birthDate: string;
+  nationality: string;
+  address: string;
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewer?: string;
+  rejectionReason?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 用户KYC列表查询条件
+export interface UserKycQueryColumn {
+  exp: string;      // 表达式 (如: "like", "eq", "gt" 等)
+  logic: string;    // 逻辑关系 (如: "and", "or")
+  name: string;     // 字段名 (如: "status", "userId", "documentType", "fullName")
+  value: string;    // 字段值
+}
+
+// 用户KYC列表请求参数
+export interface UserKycListRequest {
+  columns?: UserKycQueryColumn[];
+  limit: number;    // 每页数量
+  page: number;     // 页码 (从0开始)
+  sort: string;     // 排序字段
+}
+
+// 用户KYC列表响应数据
+export interface UserKycListResponse {
+  usersKycs: UserKyc[];  // 用户KYC列表
+  total: number;    // 总数量
+  page: number;     // 当前页码
+  limit: number;    // 每页数量
+}
+
 // 登录表单类型
 export interface LoginForm {
   username: string;

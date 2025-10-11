@@ -7,6 +7,7 @@ import {
   CreditCardOutlined,
   FileTextOutlined,
   TeamOutlined,
+  IdcardOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -38,6 +39,11 @@ const MainLayout: React.FC = () => {
       key: '/card-applys',
       icon: <FileTextOutlined />,
       label: '卡片申请',
+    },
+    {
+      key: '/user-kycs',
+      icon: <IdcardOutlined />,
+      label: '用户KYC',
     },
     {
       key: '/admins',

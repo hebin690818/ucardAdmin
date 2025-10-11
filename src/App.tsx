@@ -7,6 +7,7 @@ import MainLayout from './layouts/MainLayout';
 import UserList from './pages/UserList';
 import CardList from './pages/CardList';
 import CardApplyList from './pages/CardApplyList';
+import UserKycList from './pages/UserKycList';
 import AdminList from './pages/AdminList';
 import { authUtils } from './utils/auth';
 
@@ -34,6 +35,7 @@ const App: React.FC = () => {
             <Route path="users" element={<UserList />} />
             <Route path="cards" element={<CardList />} />
             <Route path="card-applys" element={<CardApplyList />} />
+            <Route path="user-kycs" element={<UserKycList />} />
             <Route path="admins" element={<AdminList />} />
           </Route>
         </Routes>

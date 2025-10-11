@@ -105,6 +105,13 @@ interface AdminListData {
   limit: number;
 }
 
+interface UserKycListData {
+  usersKycs: any[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export const api = {
   // 获取验证码
   getCaptcha: () => request<CaptchaData>('/dpi/v1/auth/captcha'),
@@ -136,6 +143,12 @@ export const api = {
 
   // 获取管理员列表
   getAdminList: (data: any) => request<AdminListData>('/dpi/v1/admin/list', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+
+  // 获取用户KYC列表
+  getUserKycList: (data: any) => request<UserKycListData>('/dpi/v1/usersKyc/list', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
