@@ -104,12 +104,12 @@ const AdminList: React.FC = () => {
       key: 'username',
       width: 120,
     },
-    {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
-      width: 200,
-    },
+    // {
+    //   title: '邮箱',
+    //   dataIndex: 'email',
+    //   key: 'email',
+    //   width: 200,
+    // },
     {
       title: '角色',
       dataIndex: 'role',
@@ -137,13 +137,13 @@ const AdminList: React.FC = () => {
         </Tag>
       ),
     },
-    {
-      title: '最后登录',
-      dataIndex: 'lastLogin',
-      key: 'lastLogin',
-      width: 180,
-      render: (date: string) => date ? new Date(date).toLocaleString() : '-',
-    },
+    // {
+    //   title: '最后登录',
+    //   dataIndex: 'lastLogin',
+    //   key: 'lastLogin',
+    //   width: 180,
+    //   render: (date: string) => date ? new Date(date).toLocaleString() : '-',
+    // },
     {
       title: '创建时间',
       dataIndex: 'createdAt',

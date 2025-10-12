@@ -1,22 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Tag, Input, Modal, Form, message, Select, Descriptions } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, CheckOutlined, CloseOutlined, EyeOutlined } from '@ant-design/icons';
-import type { UserKyc, UserKycListRequest } from '../types';
-import { api } from '../utils/request';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Space,
+  Tag,
+  Input,
+  Modal,
+  Form,
+  message,
+  Select,
+  Descriptions,
+} from "antd";
+import type { ColumnsType } from "antd/es/table";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
+import type { UserKyc, UserKycListRequest } from "../types";
+import { api } from "../utils/request";
 
 const { Search } = Input;
 
 const UserKycList: React.FC = () => {
   const [userKycs, setUserKycs] = useState<UserKyc[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [editingUserKyc, setEditingUserKyc] = useState<UserKyc | null>(null);
   const [viewingUserKyc, setViewingUserKyc] = useState<UserKyc | null>(null);
   const [form] = Form.useForm();
-  
+
   // 分页状态
   const [pagination, setPagination] = useState({
     current: 1,
@@ -37,69 +56,80 @@ const UserKycList: React.FC = () => {
         columns: [],
         limit: pagination.pageSize,
         page: pagination.current - 1, // API从0开始
-        sort: 'id',
+        sort: "id",
       };
 
       // 如果有搜索条件，添加搜索列
       if (searchText.trim()) {
         queryData.columns = [
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'userId',
+            exp: "like",
+            logic: "or",
+            name: "userId",
             value: searchText.trim(),
           },
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'fullName',
+            exp: "like",
+            logic: "or",
+            name: "fullName",
             value: searchText.trim(),
           },
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'documentNumber',
+            exp: "like",
+            logic: "or",
+            name: "documentNumber",
             value: searchText.trim(),
           },
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'documentType',
+            exp: "like",
+            logic: "or",
+            name: "documentType",
             value: searchText.trim(),
           },
         ];
       }
 
       const response = await api.getUserKycList(queryData);
-      
+
       console.log(response);
       // 转换数据格式
       const userKycList: UserKyc[] = response.usersKycs.map((item: any) => ({
         id: item.id,
-        userId: item.userId,
-        status: item.status || 'pending',
-        documentType: item.documentType,
-        documentNumber: item.documentNumber,
-        fullName: item.fullName,
+        userId: item.uid,
+        status: item.status || "pending",
+        documentType:
+          item.identityCardType === 1
+            ? "身份证"
+            : item.identityCardType === 2
+            ? "护照"
+            : item.identityCardType === 3
+            ? "护照+非旅游签证/非中国居住证"
+            : item.identityCardType === 4
+            ? "驾驶证"
+            : "其他",
+        documentNumber: item.identityCard,
+        fullName: item.lastNameEn + " " + item.firstNameEn,
         birthDate: item.birthDate,
-        nationality: item.nationality,
+        nationality: item.countryArea,
         address: item.address,
-        submittedAt: item.submittedAt,
+        submittedAt: item.createdAt,
         reviewedAt: item.reviewedAt,
         reviewer: item.reviewer,
         rejectionReason: item.rejectionReason,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
+        identityCardFront: item.identityFrontPicURL,
+        identityCardBack: item.identityBackPicURL,
       }));
 
       setUserKycs(userKycList);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: response.total,
       }));
     } catch (error) {
-      message.error('获取用户KYC列表失败');
-      console.error('Load user kycs error:', error);
+      message.error("获取用户KYC列表失败");
+      console.error("Load user kycs error:", error);
     } finally {
       setLoading(false);
     }
@@ -108,135 +138,161 @@ const UserKycList: React.FC = () => {
   // 表格列配置
   const columns: ColumnsType<UserKyc> = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
       width: 80,
     },
     {
-      title: '用户ID',
-      dataIndex: 'userId',
-      key: 'userId',
+      title: "用户ID",
+      dataIndex: "userId",
+      key: "userId",
       width: 100,
     },
     {
-      title: '姓名',
-      dataIndex: 'fullName',
-      key: 'fullName',
+      title: "姓名",
+      dataIndex: "fullName",
+      key: "fullName",
       width: 120,
     },
     {
-      title: '证件类型',
-      dataIndex: 'documentType',
-      key: 'documentType',
+      title: "证件类型",
+      dataIndex: "documentType",
+      key: "documentType",
       width: 100,
     },
     {
-      title: '证件号码',
-      dataIndex: 'documentNumber',
-      key: 'documentNumber',
+      title: "证件正面",
+      dataIndex: "identityCardFront",
+      key: "identityCardFront",
+      width: 100,
+      render: (identityCardFront: string) =>
+        identityCardFront ? (
+          <img src={identityCardFront} width={100} height={100} />
+        ) : (
+          "-"
+        ),
+    },
+    {
+      title: "证件背面",
+      dataIndex: "identityCardBack",
+      key: "identityCardBack",
+      width: 100,
+      render: (identityCardBack: string) =>
+        identityCardBack ? (
+          <img src={identityCardBack} width={100} height={100} />
+        ) : (
+          "-"
+        ),
+    },
+    {
+      title: "证件号码",
+      dataIndex: "documentNumber",
+      key: "documentNumber",
       width: 150,
       ellipsis: true,
     },
     {
-      title: '国籍',
-      dataIndex: 'nationality',
-      key: 'nationality',
+      title: "国籍",
+      dataIndex: "nationality",
+      key: "nationality",
       width: 100,
     },
     {
-      title: 'KYC状态',
-      dataIndex: 'status',
-      key: 'status',
+      title: "KYC状态",
+      dataIndex: "status",
+      key: "status",
       width: 120,
       render: (status: string) => {
         const statusConfig = {
-          pending: { color: 'processing', text: '待审核' },
-          approved: { color: 'success', text: '已通过' },
-          rejected: { color: 'error', text: '已拒绝' },
+          pending: { color: "processing", text: "待审核" },
+          approved: { color: "success", text: "已通过" },
+          rejected: { color: "error", text: "已拒绝" },
         };
-        const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+        const config =
+          statusConfig[status as keyof typeof statusConfig] ||
+          statusConfig.pending;
         return <Tag color={config.color}>{config.text}</Tag>;
       },
     },
     {
-      title: '提交时间',
-      dataIndex: 'submittedAt',
-      key: 'submittedAt',
+      title: "提交时间",
+      dataIndex: "submittedAt",
+      key: "submittedAt",
       width: 180,
-      render: (date: string) => date ? new Date(date).toLocaleString() : '-',
+      render: (date: string) => (date ? new Date(date).toLocaleString() : "-"),
     },
-    {
-      title: '审核时间',
-      dataIndex: 'reviewedAt',
-      key: 'reviewedAt',
-      width: 180,
-      render: (date: string) => date ? new Date(date).toLocaleString() : '-',
-    },
-    {
-      title: '审核人',
-      dataIndex: 'reviewer',
-      key: 'reviewer',
-      width: 120,
-      render: (reviewer: string) => reviewer || '-',
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 300,
-      fixed: 'right',
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="link"
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record)}
-          >
-            查看
-          </Button>
-          {record.status === 'pending' && (
-            <>
-              <Button
-                type="link"
-                icon={<CheckOutlined />}
-                onClick={() => handleApprove(record)}
-                style={{ color: '#52c41a' }}
-              >
-                通过
-              </Button>
-              <Button
-                type="link"
-                danger
-                icon={<CloseOutlined />}
-                onClick={() => handleReject(record)}
-              >
-                拒绝
-              </Button>
-            </>
-          )}
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            编辑
-          </Button>
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
-          >
-            删除
-          </Button>
-        </Space>
-      ),
-    },
+    // {
+    //   title: "审核时间",
+    //   dataIndex: "reviewedAt",
+    //   key: "reviewedAt",
+    //   width: 180,
+    //   render: (date: string) => (date ? new Date(date).toLocaleString() : "-"),
+    // },
+    // {
+    //   title: "审核人",
+    //   dataIndex: "reviewer",
+    //   key: "reviewer",
+    //   width: 120,
+    //   render: (reviewer: string) => reviewer || "-",
+    // },
+    // {
+    //   title: "操作",
+    //   key: "action",
+    //   width: 300,
+    //   fixed: "right",
+    //   render: (_, record) => (
+    //     <Space size="small">
+    //       <Button
+    //         type="link"
+    //         icon={<EyeOutlined />}
+    //         onClick={() => handleView(record)}
+    //       >
+    //         查看
+    //       </Button>
+    //       {record.status === "pending" && (
+    //         <>
+    //           <Button
+    //             type="link"
+    //             icon={<CheckOutlined />}
+    //             onClick={() => handleApprove(record)}
+    //             style={{ color: "#52c41a" }}
+    //           >
+    //             通过
+    //           </Button>
+    //           <Button
+    //             type="link"
+    //             danger
+    //             icon={<CloseOutlined />}
+    //             onClick={() => handleReject(record)}
+    //           >
+    //             拒绝
+    //           </Button>
+    //         </>
+    //       )}
+    //       <Button
+    //         type="link"
+    //         icon={<EditOutlined />}
+    //         onClick={() => handleEdit(record)}
+    //       >
+    //         编辑
+    //       </Button>
+    //       <Button
+    //         type="link"
+    //         danger
+    //         icon={<DeleteOutlined />}
+    //         onClick={() => handleDelete(record)}
+    //       >
+    //         删除
+    //       </Button>
+    //     </Space>
+    //   ),
+    // },
   ];
 
   // 搜索功能
   const handleSearch = () => {
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
     loadUserKycs();
   };
 
@@ -259,22 +315,29 @@ const UserKycList: React.FC = () => {
 
   const handleApprove = (userKyc: UserKyc) => {
     Modal.confirm({
-      title: '确认通过',
+      title: "确认通过",
       content: `确定要通过用户 ${userKyc.userId} 的KYC认证吗？`,
-      okText: '确定',
-      cancelText: '取消',
+      okText: "确定",
+      cancelText: "取消",
       onOk: async () => {
         try {
           // TODO: 调用KYC审核通过API
           // await api.approveUserKyc(userKyc.id);
-          setUserKycs(userKycs.map(uk => 
-            uk.id === userKyc.id 
-              ? { ...uk, status: 'approved' as const, reviewedAt: new Date().toISOString(), reviewer: 'admin' }
-              : uk
-          ));
-          message.success('KYC审核通过成功');
+          setUserKycs(
+            userKycs.map((uk) =>
+              uk.id === userKyc.id
+                ? {
+                    ...uk,
+                    status: "approved" as const,
+                    reviewedAt: new Date().toISOString(),
+                    reviewer: "admin",
+                  }
+                : uk
+            )
+          );
+          message.success("KYC审核通过成功");
         } catch (error) {
-          message.error('KYC审核通过失败');
+          message.error("KYC审核通过失败");
         }
       },
     });
@@ -282,22 +345,30 @@ const UserKycList: React.FC = () => {
 
   const handleReject = (userKyc: UserKyc) => {
     Modal.confirm({
-      title: '确认拒绝',
+      title: "确认拒绝",
       content: `确定要拒绝用户 ${userKyc.userId} 的KYC认证吗？`,
-      okText: '确定',
-      cancelText: '取消',
+      okText: "确定",
+      cancelText: "取消",
       onOk: async () => {
         try {
           // TODO: 调用KYC审核拒绝API
           // await api.rejectUserKyc(userKyc.id, rejectionReason);
-          setUserKycs(userKycs.map(uk => 
-            uk.id === userKyc.id 
-              ? { ...uk, status: 'rejected' as const, reviewedAt: new Date().toISOString(), reviewer: 'admin', rejectionReason: '不符合要求' }
-              : uk
-          ));
-          message.success('KYC审核拒绝成功');
+          setUserKycs(
+            userKycs.map((uk) =>
+              uk.id === userKyc.id
+                ? {
+                    ...uk,
+                    status: "rejected" as const,
+                    reviewedAt: new Date().toISOString(),
+                    reviewer: "admin",
+                    rejectionReason: "不符合要求",
+                  }
+                : uk
+            )
+          );
+          message.success("KYC审核拒绝成功");
         } catch (error) {
-          message.error('KYC审核拒绝失败');
+          message.error("KYC审核拒绝失败");
         }
       },
     });
@@ -305,18 +376,18 @@ const UserKycList: React.FC = () => {
 
   const handleDelete = (userKyc: UserKyc) => {
     Modal.confirm({
-      title: '确认删除',
+      title: "确认删除",
       content: `确定要删除用户 ${userKyc.userId} 的KYC记录吗？`,
-      okText: '确定',
-      cancelText: '取消',
+      okText: "确定",
+      cancelText: "取消",
       onOk: async () => {
         try {
           // TODO: 调用删除KYC API
           // await api.deleteUserKyc(userKyc.id);
           setUserKycs(userKycs.filter((uk) => uk.id !== userKyc.id));
-          message.success('删除成功');
+          message.success("删除成功");
         } catch (error) {
-          message.error('删除失败');
+          message.error("删除失败");
         }
       },
     });
@@ -333,7 +404,7 @@ const UserKycList: React.FC = () => {
             uk.id === editingUserKyc.id ? { ...uk, ...values } : uk
           )
         );
-        message.success('更新成功');
+        message.success("更新成功");
       } else {
         // TODO: 调用新增KYC API
         // await api.createUserKyc(values);
@@ -344,11 +415,11 @@ const UserKycList: React.FC = () => {
           updatedAt: new Date().toISOString(),
         };
         setUserKycs([...userKycs, newUserKyc]);
-        message.success('添加成功');
+        message.success("添加成功");
       }
       setIsModalOpen(false);
     } catch (error) {
-      console.error('表单验证失败:', error);
+      console.error("表单验证失败:", error);
     }
   };
 
@@ -363,7 +434,13 @@ const UserKycList: React.FC = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Space>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
             新增KYC
@@ -392,8 +469,9 @@ const UserKycList: React.FC = () => {
           total: pagination.total,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
-          pageSizeOptions: ['10', '20', '50', '100'],
+          showTotal: (total, range) =>
+            `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
+          pageSizeOptions: ["10", "20", "50", "100"],
         }}
         onChange={handleTableChange}
       />
@@ -406,33 +484,67 @@ const UserKycList: React.FC = () => {
         footer={[
           <Button key="close" onClick={() => setIsDetailModalOpen(false)}>
             关闭
-          </Button>
+          </Button>,
         ]}
         width={800}
       >
         {viewingUserKyc && (
           <Descriptions bordered column={2}>
-            <Descriptions.Item label="用户ID">{viewingUserKyc.userId}</Descriptions.Item>
-            <Descriptions.Item label="姓名">{viewingUserKyc.fullName}</Descriptions.Item>
-            <Descriptions.Item label="证件类型">{viewingUserKyc.documentType}</Descriptions.Item>
-            <Descriptions.Item label="证件号码">{viewingUserKyc.documentNumber}</Descriptions.Item>
-            <Descriptions.Item label="出生日期">{viewingUserKyc.birthDate}</Descriptions.Item>
-            <Descriptions.Item label="国籍">{viewingUserKyc.nationality}</Descriptions.Item>
-            <Descriptions.Item label="地址" span={2}>{viewingUserKyc.address}</Descriptions.Item>
+            <Descriptions.Item label="用户ID">
+              {viewingUserKyc.userId}
+            </Descriptions.Item>
+            <Descriptions.Item label="姓名">
+              {viewingUserKyc.fullName}
+            </Descriptions.Item>
+            <Descriptions.Item label="证件类型">
+              {viewingUserKyc.documentType}
+            </Descriptions.Item>
+            <Descriptions.Item label="证件号码">
+              {viewingUserKyc.documentNumber}
+            </Descriptions.Item>
+            <Descriptions.Item label="出生日期">
+              {viewingUserKyc.birthDate}
+            </Descriptions.Item>
+            <Descriptions.Item label="国籍">
+              {viewingUserKyc.nationality}
+            </Descriptions.Item>
+            <Descriptions.Item label="地址" span={2}>
+              {viewingUserKyc.address}
+            </Descriptions.Item>
             <Descriptions.Item label="KYC状态">
-              <Tag color={viewingUserKyc.status === 'approved' ? 'success' : viewingUserKyc.status === 'rejected' ? 'error' : 'processing'}>
-                {viewingUserKyc.status === 'approved' ? '已通过' : viewingUserKyc.status === 'rejected' ? '已拒绝' : '待审核'}
+              <Tag
+                color={
+                  viewingUserKyc.status === "approved"
+                    ? "success"
+                    : viewingUserKyc.status === "rejected"
+                    ? "error"
+                    : "processing"
+                }
+              >
+                {viewingUserKyc.status === "approved"
+                  ? "已通过"
+                  : viewingUserKyc.status === "rejected"
+                  ? "已拒绝"
+                  : "待审核"}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="提交时间">{new Date(viewingUserKyc.submittedAt).toLocaleString()}</Descriptions.Item>
+            <Descriptions.Item label="提交时间">
+              {new Date(viewingUserKyc.submittedAt).toLocaleString()}
+            </Descriptions.Item>
             {viewingUserKyc.reviewedAt && (
-              <Descriptions.Item label="审核时间">{new Date(viewingUserKyc.reviewedAt).toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label="审核时间">
+                {new Date(viewingUserKyc.reviewedAt).toLocaleString()}
+              </Descriptions.Item>
             )}
             {viewingUserKyc.reviewer && (
-              <Descriptions.Item label="审核人">{viewingUserKyc.reviewer}</Descriptions.Item>
+              <Descriptions.Item label="审核人">
+                {viewingUserKyc.reviewer}
+              </Descriptions.Item>
             )}
             {viewingUserKyc.rejectionReason && (
-              <Descriptions.Item label="拒绝原因" span={2}>{viewingUserKyc.rejectionReason}</Descriptions.Item>
+              <Descriptions.Item label="拒绝原因" span={2}>
+                {viewingUserKyc.rejectionReason}
+              </Descriptions.Item>
             )}
           </Descriptions>
         )}
@@ -440,7 +552,7 @@ const UserKycList: React.FC = () => {
 
       {/* 编辑模态框 */}
       <Modal
-        title={editingUserKyc ? '编辑KYC' : '新增KYC'}
+        title={editingUserKyc ? "编辑KYC" : "新增KYC"}
         open={isModalOpen}
         onOk={handleModalOk}
         onCancel={() => setIsModalOpen(false)}
@@ -451,12 +563,12 @@ const UserKycList: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ status: 'pending' }}
+          initialValues={{ status: "pending" }}
         >
           <Form.Item
             name="userId"
             label="用户ID"
-            rules={[{ required: true, message: '请输入用户ID' }]}
+            rules={[{ required: true, message: "请输入用户ID" }]}
           >
             <Input type="number" placeholder="请输入用户ID" />
           </Form.Item>
@@ -464,7 +576,7 @@ const UserKycList: React.FC = () => {
           <Form.Item
             name="fullName"
             label="姓名"
-            rules={[{ required: true, message: '请输入姓名' }]}
+            rules={[{ required: true, message: "请输入姓名" }]}
           >
             <Input placeholder="请输入姓名" />
           </Form.Item>
@@ -472,7 +584,7 @@ const UserKycList: React.FC = () => {
           <Form.Item
             name="documentType"
             label="证件类型"
-            rules={[{ required: true, message: '请选择证件类型' }]}
+            rules={[{ required: true, message: "请选择证件类型" }]}
           >
             <Select>
               <Select.Option value="passport">护照</Select.Option>
@@ -485,7 +597,7 @@ const UserKycList: React.FC = () => {
           <Form.Item
             name="documentNumber"
             label="证件号码"
-            rules={[{ required: true, message: '请输入证件号码' }]}
+            rules={[{ required: true, message: "请输入证件号码" }]}
           >
             <Input placeholder="请输入证件号码" />
           </Form.Item>
@@ -493,7 +605,7 @@ const UserKycList: React.FC = () => {
           <Form.Item
             name="birthDate"
             label="出生日期"
-            rules={[{ required: true, message: '请输入出生日期' }]}
+            rules={[{ required: true, message: "请输入出生日期" }]}
           >
             <Input placeholder="请输入出生日期" />
           </Form.Item>
@@ -501,7 +613,7 @@ const UserKycList: React.FC = () => {
           <Form.Item
             name="nationality"
             label="国籍"
-            rules={[{ required: true, message: '请输入国籍' }]}
+            rules={[{ required: true, message: "请输入国籍" }]}
           >
             <Input placeholder="请输入国籍" />
           </Form.Item>
@@ -509,7 +621,7 @@ const UserKycList: React.FC = () => {
           <Form.Item
             name="address"
             label="地址"
-            rules={[{ required: true, message: '请输入地址' }]}
+            rules={[{ required: true, message: "请输入地址" }]}
           >
             <Input.TextArea rows={3} placeholder="请输入地址" />
           </Form.Item>
@@ -517,7 +629,7 @@ const UserKycList: React.FC = () => {
           <Form.Item
             name="status"
             label="状态"
-            rules={[{ required: true, message: '请选择状态' }]}
+            rules={[{ required: true, message: "请选择状态" }]}
           >
             <Select>
               <Select.Option value="pending">待审核</Select.Option>

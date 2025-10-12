@@ -1,20 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Tag, Input, Modal, Form, message, Select } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
-import type { User, UserListRequest } from '../types';
-import { api } from '../utils/request';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Space,
+  Tag,
+  Input,
+  Modal,
+  Form,
+  message,
+  Select,
+} from "antd";
+import type { ColumnsType } from "antd/es/table";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import type { User, UserListRequest } from "../types";
+import { api } from "../utils/request";
 
 const { Search } = Input;
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [form] = Form.useForm();
-  
+
   // 分页状态
   const [pagination, setPagination] = useState({
     current: 1,
@@ -35,34 +50,34 @@ const UserList: React.FC = () => {
         columns: [],
         limit: pagination.pageSize,
         page: pagination.current - 1, // API从0开始
-        sort: 'id',
+        sort: "id",
       };
 
       // 如果有搜索条件，添加搜索列
       if (searchText.trim()) {
         queryData.columns = [
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'name',
+            exp: "like",
+            logic: "or",
+            name: "name",
             value: searchText.trim(),
           },
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'email',
+            exp: "like",
+            logic: "or",
+            name: "email",
             value: searchText.trim(),
           },
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'userCode',
+            exp: "like",
+            logic: "or",
+            name: "userCode",
             value: searchText.trim(),
           },
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'uid',
+            exp: "like",
+            logic: "or",
+            name: "uid",
             value: searchText.trim(),
           },
         ];
@@ -77,8 +92,8 @@ const UserList: React.FC = () => {
         email: item.email,
         name: item.name,
         username: item.username,
-        role: item.role || 'user',
-        status: item.status === 1 ? 'active' : 'inactive',
+        role: item.role || "user",
+        status: item.status === 1 ? "active" : "inactive",
         createdAt: item.createdAt,
         // 新增字段
         uid: item.uid,
@@ -93,13 +108,13 @@ const UserList: React.FC = () => {
       }));
 
       setUsers(userList);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: response.total,
       }));
     } catch (error) {
-      message.error('获取用户列表失败');
-      console.error('Load users error:', error);
+      message.error("获取用户列表失败");
+      console.error("Load users error:", error);
     } finally {
       setLoading(false);
     }
@@ -108,80 +123,80 @@ const UserList: React.FC = () => {
   // 表格列配置
   const columns: ColumnsType<User> = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
       width: 80,
     },
     {
-      title: '用户代码',
-      dataIndex: 'userCode',
-      key: 'userCode',
+      title: "用户代码",
+      dataIndex: "userCode",
+      key: "userCode",
       width: 120,
     },
     {
-      title: 'UID',
-      dataIndex: 'uid',
-      key: 'uid',
+      title: "UID",
+      dataIndex: "uid",
+      key: "uid",
       width: 150,
       ellipsis: true,
     },
     {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
+      title: "邮箱",
+      dataIndex: "email",
+      key: "email",
       width: 200,
     },
+    // {
+    //   title: '姓名',
+    //   dataIndex: 'name',
+    //   key: 'name',
+    //   width: 120,
+    //   render: (name: string, record: User) => name || record.username || '-',
+    // },
+    // {
+    //   title: '手机',
+    //   dataIndex: 'phone',
+    //   key: 'phone',
+    //   width: 120,
+    //   render: (phone: number) => phone || '-',
+    // },
+    // {
+    //   title: '地区',
+    //   dataIndex: 'area',
+    //   key: 'area',
+    //   width: 100,
+    //   render: (area: string) => area || '-',
+    // },
     {
-      title: '姓名',
-      dataIndex: 'name',
-      key: 'name',
+      title: "邀请码",
+      dataIndex: "inviteCode",
+      key: "inviteCode",
       width: 120,
-      render: (name: string, record: User) => name || record.username || '-',
     },
     {
-      title: '手机',
-      dataIndex: 'phone',
-      key: 'phone',
-      width: 120,
-      render: (phone: number) => phone || '-',
-    },
-    {
-      title: '地区',
-      dataIndex: 'area',
-      key: 'area',
-      width: 100,
-      render: (area: string) => area || '-',
-    },
-    {
-      title: '邀请码',
-      dataIndex: 'inviteCode',
-      key: 'inviteCode',
-      width: 120,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
+      title: "状态",
+      dataIndex: "status",
+      key: "status",
       width: 80,
       render: (status: string) => (
-        <Tag color={status === 'active' ? 'success' : 'default'}>
-          {status === 'active' ? '活跃' : '禁用'}
+        <Tag color={status === "active" ? "success" : "default"}>
+          {status === "active" ? "活跃" : "禁用"}
         </Tag>
       ),
     },
     {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      title: "创建时间",
+      dataIndex: "createdAt",
+      key: "createdAt",
       width: 180,
-      render: (date: string) => date ? new Date(date).toLocaleString() : '-',
+      render: (date: string) => (date ? new Date(date).toLocaleString() : "-"),
     },
     {
-      title: '操作',
-      key: 'action',
+      title: "操作",
+      key: "action",
       width: 180,
-      fixed: 'right',
+      fixed: "right",
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -206,7 +221,7 @@ const UserList: React.FC = () => {
 
   // 搜索功能
   const handleSearch = () => {
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
     loadUsers();
   };
 
@@ -224,18 +239,18 @@ const UserList: React.FC = () => {
 
   const handleDelete = (user: User) => {
     Modal.confirm({
-      title: '确认删除',
+      title: "确认删除",
       content: `确定要删除用户 "${user.name}" 吗？`,
-      okText: '确定',
-      cancelText: '取消',
+      okText: "确定",
+      cancelText: "取消",
       onOk: async () => {
         try {
           // TODO: 调用删除用户API
           // await api.deleteUser(user.id);
           setUsers(users.filter((u) => u.id !== user.id));
-          message.success('删除成功');
+          message.success("删除成功");
         } catch (error) {
-          message.error('删除失败');
+          message.error("删除失败");
         }
       },
     });
@@ -248,25 +263,23 @@ const UserList: React.FC = () => {
         // TODO: 调用编辑用户API
         // await api.updateUser(editingUser.id, values);
         setUsers(
-          users.map((u) =>
-            u.id === editingUser.id ? { ...u, ...values } : u
-          )
+          users.map((u) => (u.id === editingUser.id ? { ...u, ...values } : u))
         );
-        message.success('更新成功');
+        message.success("更新成功");
       } else {
         // TODO: 调用新增用户API
         // await api.createUser(values);
         const newUser: User = {
           id: Math.max(...users.map((u) => u.id)) + 1,
           ...values,
-          createdAt: new Date().toISOString().split('T')[0],
+          createdAt: new Date().toISOString().split("T")[0],
         };
         setUsers([...users, newUser]);
-        message.success('添加成功');
+        message.success("添加成功");
       }
       setIsModalOpen(false);
     } catch (error) {
-      console.error('表单验证失败:', error);
+      console.error("表单验证失败:", error);
     }
   };
 
@@ -281,7 +294,13 @@ const UserList: React.FC = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Space>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
             新增用户
@@ -310,14 +329,15 @@ const UserList: React.FC = () => {
           total: pagination.total,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
-          pageSizeOptions: ['10', '20', '50', '100'],
+          showTotal: (total, range) =>
+            `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
+          pageSizeOptions: ["10", "20", "50", "100"],
         }}
         onChange={handleTableChange}
       />
 
       <Modal
-        title={editingUser ? '编辑用户' : '新增用户'}
+        title={editingUser ? "编辑用户" : "新增用户"}
         open={isModalOpen}
         onOk={handleModalOk}
         onCancel={() => setIsModalOpen(false)}
@@ -327,14 +347,14 @@ const UserList: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ status: 'active', role: 'user' }}
+          initialValues={{ status: "active", role: "user" }}
         >
           <Form.Item
             name="email"
             label="邮箱"
             rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' },
+              { required: true, message: "请输入邮箱" },
+              { type: "email", message: "请输入有效的邮箱地址" },
             ]}
           >
             <Input placeholder="请输入邮箱" />
@@ -343,7 +363,7 @@ const UserList: React.FC = () => {
           <Form.Item
             name="name"
             label="姓名"
-            rules={[{ required: true, message: '请输入姓名' }]}
+            rules={[{ required: true, message: "请输入姓名" }]}
           >
             <Input placeholder="请输入姓名" />
           </Form.Item>
@@ -351,7 +371,7 @@ const UserList: React.FC = () => {
           <Form.Item
             name="role"
             label="角色"
-            rules={[{ required: true, message: '请选择角色' }]}
+            rules={[{ required: true, message: "请选择角色" }]}
           >
             <Select>
               <Select.Option value="user">普通用户</Select.Option>
@@ -362,7 +382,7 @@ const UserList: React.FC = () => {
           <Form.Item
             name="status"
             label="状态"
-            rules={[{ required: true, message: '请选择状态' }]}
+            rules={[{ required: true, message: "请选择状态" }]}
           >
             <Select>
               <Select.Option value="active">活跃</Select.Option>
@@ -376,4 +396,3 @@ const UserList: React.FC = () => {
 };
 
 export default UserList;
-
