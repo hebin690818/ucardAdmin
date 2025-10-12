@@ -12,15 +12,7 @@ import {
   Descriptions,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  SearchOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import type { UserKyc, UserKycListRequest } from "../types";
 import { api } from "../utils/request";
 
@@ -33,7 +25,7 @@ const UserKycList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [editingUserKyc, setEditingUserKyc] = useState<UserKyc | null>(null);
-  const [viewingUserKyc, setViewingUserKyc] = useState<UserKyc | null>(null);
+  const [viewingUserKyc] = useState<UserKyc | null>(null);
   const [form] = Form.useForm();
 
   // 分页状态
@@ -296,10 +288,10 @@ const UserKycList: React.FC = () => {
     loadUserKycs();
   };
 
-  const handleView = (userKyc: UserKyc) => {
-    setViewingUserKyc(userKyc);
-    setIsDetailModalOpen(true);
-  };
+  // const handleView = (userKyc: UserKyc) => {
+  //   setViewingUserKyc(userKyc);
+  //   setIsDetailModalOpen(true);
+  // };
 
   const handleAdd = () => {
     setEditingUserKyc(null);
@@ -307,91 +299,85 @@ const UserKycList: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleEdit = (userKyc: UserKyc) => {
-    setEditingUserKyc(userKyc);
-    form.setFieldsValue(userKyc);
-    setIsModalOpen(true);
-  };
+  // const handleEdit = (userKyc: UserKyc) => {
+  //   setEditingUserKyc(userKyc);
+  //   form.setFieldsValue(userKyc);
+  //   setIsModalOpen(true);
+  // };
 
-  const handleApprove = (userKyc: UserKyc) => {
-    Modal.confirm({
-      title: "确认通过",
-      content: `确定要通过用户 ${userKyc.userId} 的KYC认证吗？`,
-      okText: "确定",
-      cancelText: "取消",
-      onOk: async () => {
-        try {
-          // TODO: 调用KYC审核通过API
-          // await api.approveUserKyc(userKyc.id);
-          setUserKycs(
-            userKycs.map((uk) =>
-              uk.id === userKyc.id
-                ? {
-                    ...uk,
-                    status: "approved" as const,
-                    reviewedAt: new Date().toISOString(),
-                    reviewer: "admin",
-                  }
-                : uk
-            )
-          );
-          message.success("KYC审核通过成功");
-        } catch (error) {
-          message.error("KYC审核通过失败");
-        }
-      },
-    });
-  };
+  // const handleApprove = (userKyc: UserKyc) => {
+  //   Modal.confirm({
+  //     title: "确认通过",
+  //     content: `确定要通过用户 ${userKyc.userId} 的KYC认证吗？`,
+  //     okText: "确定",
+  //     cancelText: "取消",
+  //     onOk: async () => {
+  //       try {
+  //         setUserKycs(
+  //           userKycs.map((uk) =>
+  //             uk.id === userKyc.id
+  //               ? {
+  //                   ...uk,
+  //                   status: "approved" as const,
+  //                   reviewedAt: new Date().toISOString(),
+  //                   reviewer: "admin",
+  //                 }
+  //               : uk
+  //           )
+  //         );
+  //         message.success("KYC审核通过成功");
+  //       } catch (error) {
+  //         message.error("KYC审核通过失败");
+  //       }
+  //     },
+  //   });
+  // };
 
-  const handleReject = (userKyc: UserKyc) => {
-    Modal.confirm({
-      title: "确认拒绝",
-      content: `确定要拒绝用户 ${userKyc.userId} 的KYC认证吗？`,
-      okText: "确定",
-      cancelText: "取消",
-      onOk: async () => {
-        try {
-          // TODO: 调用KYC审核拒绝API
-          // await api.rejectUserKyc(userKyc.id, rejectionReason);
-          setUserKycs(
-            userKycs.map((uk) =>
-              uk.id === userKyc.id
-                ? {
-                    ...uk,
-                    status: "rejected" as const,
-                    reviewedAt: new Date().toISOString(),
-                    reviewer: "admin",
-                    rejectionReason: "不符合要求",
-                  }
-                : uk
-            )
-          );
-          message.success("KYC审核拒绝成功");
-        } catch (error) {
-          message.error("KYC审核拒绝失败");
-        }
-      },
-    });
-  };
+  // const handleReject = (userKyc: UserKyc) => {
+  //   Modal.confirm({
+  //     title: "确认拒绝",
+  //     content: `确定要拒绝用户 ${userKyc.userId} 的KYC认证吗？`,
+  //     okText: "确定",
+  //     cancelText: "取消",
+  //     onOk: async () => {
+  //       try {
+  //         setUserKycs(
+  //           userKycs.map((uk) =>
+  //             uk.id === userKyc.id
+  //               ? {
+  //                   ...uk,
+  //                   status: "rejected" as const,
+  //                   reviewedAt: new Date().toISOString(),
+  //                   reviewer: "admin",
+  //                   rejectionReason: "不符合要求",
+  //                 }
+  //               : uk
+  //           )
+  //         );
+  //         message.success("KYC审核拒绝成功");
+  //       } catch (error) {
+  //         message.error("KYC审核拒绝失败");
+  //       }
+  //     },
+  //   });
+  // };
 
-  const handleDelete = (userKyc: UserKyc) => {
-    Modal.confirm({
-      title: "确认删除",
-      content: `确定要删除用户 ${userKyc.userId} 的KYC记录吗？`,
-      okText: "确定",
-      cancelText: "取消",
-      onOk: async () => {
-        try {
-          // TODO: 调用删除KYC API
-          // await api.deleteUserKyc(userKyc.id);
-          setUserKycs(userKycs.filter((uk) => uk.id !== userKyc.id));
-          message.success("删除成功");
-        } catch (error) {
-          message.error("删除失败");
-        }
-      },
-    });
-  };
+  // const handleDelete = (userKyc: UserKyc) => {
+  //   Modal.confirm({
+  //     title: "确认删除",
+  //     content: `确定要删除用户 ${userKyc.userId} 的KYC记录吗？`,
+  //     okText: "确定",
+  //     cancelText: "取消",
+  //     onOk: async () => {
+  //       try {
+  //         setUserKycs(userKycs.filter((uk) => uk.id !== userKyc.id));
+  //         message.success("删除成功");
+  //       } catch (error) {
+  //         message.error("删除失败");
+  //       }
+  //     },
+  //   });
+  // };
 
   const handleModalOk = async () => {
     try {
