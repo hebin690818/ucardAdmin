@@ -237,6 +237,46 @@ export interface LoginForm {
   remember?: boolean;
 }
 
+// 提币类型
+export interface Withdraw {
+  id: number;
+  uid: string;
+  address: string;
+  amount: string;
+  toAmount: string;
+  fee: string;
+  chain: string;
+  hash: string;
+  status: number;
+  errorMessage?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 提币列表查询条件
+export interface WithdrawQueryColumn {
+  exp: string;      // 表达式 (如: "like", "eq", "gt" 等)
+  logic: string;    // 逻辑关系 (如: "and", "or")
+  name: string;     // 字段名 (如: "uid", "address", "status")
+  value: string;    // 字段值
+}
+
+// 提币列表请求参数
+export interface WithdrawListRequest {
+  columns?: WithdrawQueryColumn[];
+  limit: number;    // 每页数量
+  page: number;     // 页码 (从0开始)
+  sort: string;     // 排序字段
+}
+
+// 提币列表响应数据
+export interface WithdrawListResponse {
+  withdraws: Withdraw[];  // 提币列表
+  total: number;    // 总数量
+  page: number;     // 当前页码
+  limit: number;    // 每页数量
+}
+
 // 认证状态类型
 export interface AuthState {
   isAuthenticated: boolean;

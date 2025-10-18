@@ -112,6 +112,13 @@ interface UserKycListData {
   limit: number;
 }
 
+interface WithdrawListData {
+  withdraws: any[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export const api = {
   // 获取验证码
   getCaptcha: () => request<CaptchaData>('/dpi/v1/auth/captcha'),
@@ -149,6 +156,12 @@ export const api = {
 
   // 获取用户KYC列表
   getUserKycList: (data: any) => request<UserKycListData>('/dpi/v1/usersKyc/list', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+
+  // 获取提币列表
+  getWithdrawList: (data: any) => request<WithdrawListData>('/dpi/v1/withdraw/list', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
