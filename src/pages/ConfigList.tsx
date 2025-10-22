@@ -198,12 +198,12 @@ const ConfigList: React.FC = () => {
       cancelText: '取消',
       onOk: async () => {
         try {
-          // TODO: 调用删除配置API
-          // await api.deleteConfig(config.id);
-          setConfigs(configs.filter((c) => c.id !== config.id));
+          await api.deleteConfig(config.id);
           message.success('删除成功');
-        } catch (error) {
-          message.error('删除失败');
+          // 删除成功后刷新列表
+          loadConfigs();
+        } catch (error: any) {
+          message.error(error?.message || '删除失败');
         }
       },
     });
@@ -295,6 +295,7 @@ const ConfigList: React.FC = () => {
         okText="确定"
         cancelText="取消"
         width={600}
+        centered
       >
         <Form
           form={form}

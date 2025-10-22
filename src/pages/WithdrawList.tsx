@@ -9,6 +9,9 @@ import {
   message,
   DatePicker,
   Tooltip,
+  Modal,
+  Form,
+  Radio,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -34,6 +37,11 @@ const WithdrawList: React.FC = () => {
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(
     null
   );
+
+  // 审核弹窗状态
+  const [auditModalVisible, setAuditModalVisible] = useState(false);
+  const [auditForm] = Form.useForm();
+  const [currentWithdraw, setCurrentWithdraw] = useState<Withdraw | null>(null);
 
   // 分页状态
   const [pagination, setPagination] = useState({
@@ -363,6 +371,24 @@ const WithdrawList: React.FC = () => {
       ellipsis: true,
       render: (errorMessage: string) => errorMessage || "-",
     },
+    {
+      title: "操作",
+      key: "action",
+      width: 120,
+      fixed: "right",
+      render: (_, record: Withdraw) => (
+        <Space size="small">
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => handleAudit(record)}
+            disabled={record.status !== 1} // 只有待处理状态才能审核
+          >
+            审核
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   // 搜索功能
@@ -401,6 +427,48 @@ const WithdrawList: React.FC = () => {
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
+  };
+
+  // 打开审核弹窗
+  const handleAudit = (withdraw: Withdraw) => {
+    setCurrentWithdraw(withdraw);
+    setAuditModalVisible(true);
+    auditForm.resetFields();
+  };
+
+  // 提交审核
+  const handleAuditSubmit = async () => {
+    try {
+      const values = await auditForm.validateFields();
+      if (!currentWithdraw) return;
+
+      // 调用审核API
+      await api.auditWithdraw({
+        id: currentWithdraw.id,
+        status: values.status,
+        remark: values.remark,
+      });
+
+      message.success("审核成功");
+      setAuditModalVisible(false);
+      auditForm.resetFields();
+      setCurrentWithdraw(null);
+
+      // 刷新列表
+      loadWithdraws();
+    } catch (error: any) {
+      console.error("Audit error:", error);
+      // 提取错误信息，优先使用message，然后是msg
+      const errorMessage = error?.message || error?.msg || "审核失败";
+      message.error(errorMessage);
+    }
+  };
+
+  // 取消审核
+  const handleAuditCancel = () => {
+    setAuditModalVisible(false);
+    auditForm.resetFields();
+    setCurrentWithdraw(null);
   };
 
   return (
@@ -492,6 +560,47 @@ const WithdrawList: React.FC = () => {
           onChange={handleTableChange}
         />
       </div>
+
+      {/* 审核弹窗 */}
+      <Modal
+        title="提现审核"
+        open={auditModalVisible}
+        onOk={handleAuditSubmit}
+        onCancel={handleAuditCancel}
+        okText="确定"
+        cancelText="取消"
+        width={500}
+        centered
+      >
+        <Form
+          form={auditForm}
+          layout="vertical"
+          initialValues={{ status: true }}
+        >
+          <Form.Item
+            label="审核结果"
+            name="status"
+            rules={[{ required: true, message: "请选择审核结果" }]}
+          >
+            <Radio.Group>
+              <Radio value={true}>成功</Radio>
+              <Radio value={false}>失败</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label="备注"
+            name="remark"
+            rules={[{ required: true, message: "请输入备注" }]}
+          >
+            <Input.TextArea
+              rows={4}
+              placeholder="请输入审核备注"
+              maxLength={500}
+              showCount
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

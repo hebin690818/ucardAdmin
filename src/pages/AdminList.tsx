@@ -314,6 +314,7 @@ const AdminList: React.FC = () => {
         okText="确定"
         cancelText="取消"
         width={600}
+        centered
       >
         <Form
           form={form}

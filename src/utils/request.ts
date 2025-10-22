@@ -223,5 +223,17 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  // 删除配置
+  deleteConfig: (id: number) => request<{}>(`/dpi/v1/config/${id}`, {
+    method: 'DELETE',
+  }),
+
+  // 提现审核
+  auditWithdraw: (data: { id: number; status: boolean; remark: string }) =>
+    request<{}>('/dpi/v1/withdraw/apply', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 

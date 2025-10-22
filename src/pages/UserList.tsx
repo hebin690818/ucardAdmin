@@ -329,6 +329,7 @@ const UserList: React.FC = () => {
         onCancel={() => setIsModalOpen(false)}
         okText="确定"
         cancelText="取消"
+        centered
       >
         <Form
           form={form}
