@@ -4,6 +4,7 @@ import type { ColumnsType } from "antd/es/table";
 import { SearchOutlined } from "@ant-design/icons";
 import type { UserKyc, UserKycListRequest } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 
 const { Search } = Input;
 
@@ -42,7 +43,7 @@ const UserKycList: React.FC = () => {
             exp: "like",
             logic: "or",
             name: "uid",
-            value: searchText.trim(),
+            value: encodeSearchValue(searchText),
           },
         ];
       }

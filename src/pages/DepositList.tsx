@@ -18,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import type { Deposit, DepositListRequest } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 import dayjs from "dayjs";
 
 const { Search } = Input;
@@ -73,29 +74,30 @@ const DepositList: React.FC = () => {
 
       // 地址和哈希搜索
       if (searchValue && searchValue.trim()) {
+        const encodedValue = encodeSearchValue(searchValue);
         columns.push({
           exp: "like",
           logic: "or",
           name: "from",
-          value: searchValue.trim(),
+          value: encodedValue,
         });
         columns.push({
           exp: "like",
           logic: "or",
           name: "to",
-          value: searchValue.trim(),
+          value: encodedValue,
         });
         columns.push({
           exp: "like",
           logic: "or",
           name: "hash",
-          value: searchValue.trim(),
+          value: encodedValue,
         });
         columns.push({
           exp: "like",
           logic: "or",
           name: "contract",
-          value: searchValue.trim(),
+          value: encodedValue,
         });
       }
 
@@ -105,7 +107,7 @@ const DepositList: React.FC = () => {
           exp: "eq",
           logic: "and",
           name: "chain",
-          value: chainValue,
+          value: encodeSearchValue(chainValue),
         });
       }
 
@@ -115,13 +117,13 @@ const DepositList: React.FC = () => {
           exp: "gte",
           logic: "and",
           name: "created_at",
-          value: dateValue[0].format("YYYY-MM-DD"),
+          value: encodeSearchValue(dateValue[0].format("YYYY-MM-DD")),
         });
         columns.push({
           exp: "lte",
           logic: "and",
           name: "created_at",
-          value: dateValue[1].format("YYYY-MM-DD"),
+          value: encodeSearchValue(dateValue[1].format("YYYY-MM-DD")),
         });
       }
 

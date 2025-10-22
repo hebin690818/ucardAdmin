@@ -18,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import type { Withdraw, WithdrawListRequest } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 import dayjs from "dayjs";
 
 const { Search } = Input;
@@ -83,23 +84,24 @@ const WithdrawList: React.FC = () => {
 
       // 用户ID搜索
       if (searchValue && searchValue.trim()) {
+        const encodedValue = encodeSearchValue(searchValue);
         columns.push({
           exp: "like",
           logic: "or",
           name: "uid",
-          value: searchValue.trim(),
+          value: encodedValue,
         });
         columns.push({
           exp: "like",
           logic: "or",
           name: "address",
-          value: searchValue.trim(),
+          value: encodedValue,
         });
         columns.push({
           exp: "like",
           logic: "or",
           name: "hash",
-          value: searchValue.trim(),
+          value: encodedValue,
         });
       }
 
@@ -109,7 +111,7 @@ const WithdrawList: React.FC = () => {
           exp: "eq",
           logic: "and",
           name: "status",
-          value: statusValue.toString(),
+          value: encodeSearchValue(statusValue.toString()),
         });
       }
 
@@ -119,7 +121,7 @@ const WithdrawList: React.FC = () => {
           exp: "eq",
           logic: "and",
           name: "chain",
-          value: chainValue,
+          value: encodeSearchValue(chainValue),
         });
       }
 
@@ -129,13 +131,13 @@ const WithdrawList: React.FC = () => {
           exp: "gte",
           logic: "and",
           name: "created_at",
-          value: dateValue[0].format("YYYY-MM-DD"),
+          value: encodeSearchValue(dateValue[0].format("YYYY-MM-DD")),
         });
         columns.push({
           exp: "lte",
           logic: "and",
           name: "created_at",
-          value: dateValue[1].format("YYYY-MM-DD"),
+          value: encodeSearchValue(dateValue[1].format("YYYY-MM-DD")),
         });
       }
 

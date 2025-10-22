@@ -4,6 +4,7 @@ import type { ColumnsType } from "antd/es/table";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import type { WalletLog, WalletLogListRequest } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 import dayjs from "dayjs";
 
 const { Search } = Input;
@@ -63,7 +64,7 @@ const WalletLogList: React.FC = () => {
           exp: "like",
           logic: "or",
           name: "uid",
-          value: searchValue.trim(),
+          value: encodeSearchValue(searchValue),
         });
       }
 
@@ -73,7 +74,7 @@ const WalletLogList: React.FC = () => {
           exp: "eq",
           logic: "and",
           name: "logType",
-          value: logTypeValue,
+          value: encodeSearchValue(logTypeValue),
         });
       }
 
@@ -83,13 +84,13 @@ const WalletLogList: React.FC = () => {
           exp: "gte",
           logic: "and",
           name: "createdAt",
-          value: dateValue[0].format("YYYY-MM-DD"),
+          value: encodeSearchValue(dateValue[0].format("YYYY-MM-DD")),
         });
         columns.push({
           exp: "lte",
           logic: "and",
           name: "createdAt",
-          value: dateValue[1].format("YYYY-MM-DD"),
+          value: encodeSearchValue(dateValue[1].format("YYYY-MM-DD")),
         });
       }
 

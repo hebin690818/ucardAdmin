@@ -18,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import type { User, UserListRequest } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 
 const { Search } = Input;
 
@@ -63,7 +64,7 @@ const UserList: React.FC = () => {
             exp: "like",
             logic: "or",
             name: "uid",
-            value: searchValue.trim(),
+            value: encodeSearchValue(searchValue),
           },
         ];
       }

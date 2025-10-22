@@ -4,6 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, ReloadOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { Config, ConfigListRequest } from '../types';
 import { api } from '../utils/request';
+import { encodeSearchValue } from '../utils/encode';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
@@ -46,24 +47,25 @@ const ConfigList: React.FC = () => {
 
       // 添加搜索条件
       if (searchValue.trim()) {
+        const encodedValue = encodeSearchValue(searchValue);
         queryData.columns = [
           {
             exp: 'like',
             logic: 'or',
             name: 'key',
-            value: searchValue.trim(),
+            value: encodedValue,
           },
           {
             exp: 'like',
             logic: 'or',
             name: 'value',
-            value: searchValue.trim(),
+            value: encodedValue,
           },
           {
             exp: 'like',
             logic: 'or',
             name: 'remark',
-            value: searchValue.trim(),
+            value: encodedValue,
           },
         ];
       }

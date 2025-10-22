@@ -5,6 +5,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import type { Card, CardListRequest, CardStatus } from "../types";
 import { CARD_STATUS_MAP } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 
 const { Search } = Input;
 
@@ -43,18 +44,19 @@ const CardList: React.FC = () => {
       // 如果有搜索条件，添加搜索列
       if (searchValue && searchValue.trim()) {
         console.log(11111);
+        const encodedValue = encodeSearchValue(searchValue);
         queryData.columns = [
           {
             exp: "like",
             logic: "or",
             name: "card_id",
-            value: searchValue.trim(),
+            value: encodedValue,
           },
           {
             exp: "like",
             logic: "or",
             name: "uid",
-            value: searchValue.trim(),
+            value: encodedValue,
           },
         ];
       }

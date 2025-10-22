@@ -4,6 +4,7 @@ import type { ColumnsType } from "antd/es/table";
 import { SearchOutlined } from "@ant-design/icons";
 import type { CardApply, CardApplyListRequest } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 
 const { Search } = Input;
 
@@ -46,7 +47,7 @@ const CardApplyList: React.FC = () => {
             exp: "like",
             logic: "or",
             name: "uid",
-            value: searchValue.trim(),
+            value: encodeSearchValue(searchValue),
           },
         ];
       }

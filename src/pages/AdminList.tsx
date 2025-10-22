@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import type { Admin, AdminListRequest } from "../types";
 import { api } from "../utils/request";
+import { encodeSearchValue } from "../utils/encode";
 
 const { Search } = Input;
 
@@ -64,7 +65,7 @@ const AdminList: React.FC = () => {
             exp: "like",
             logic: "or",
             name: "username",
-            value: searchValue.trim(),
+            value: encodeSearchValue(searchValue),
           },
         ];
       }
