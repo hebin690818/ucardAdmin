@@ -112,6 +112,34 @@ interface UserKycListData {
   limit: number;
 }
 
+interface WalletLogListData {
+  walletLogs: any[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+interface WithdrawListData {
+  withdraws: any[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+interface DepositListData {
+  deposits: any[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+interface ConfigListData {
+  configs: any[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export const api = {
   // 获取验证码
   getCaptcha: () => request<CaptchaData>('/dpi/v1/auth/captcha'),
@@ -127,6 +155,11 @@ export const api = {
   getUserList: (data: any) => request<UserListData>('/dpi/v1/users/list', {
     method: 'POST',
     body: JSON.stringify(data),
+  }),
+
+  // 删除用户
+  deleteUser: (id: number) => request<{}>(`/dpi/v1/users/${id}`, {
+    method: 'DELETE',
   }),
 
   // 获取卡片列表
@@ -152,5 +185,43 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
+
+  // 获取钱包日志列表
+  getWalletLogList: (data: any) => request<WalletLogListData>('/dpi/v1/walletLog/list', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+
+  // 获取提现记录列表
+  getWithdrawList: (data: any) => request<WithdrawListData>('/dpi/v1/withdraw/list', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+
+  // 获取充值记录列表
+  getDepositList: (data: any) => request<DepositListData>('/dpi/v1/deposit/list', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+
+  // 获取配置列表
+  getConfigList: (data: any) => request<ConfigListData>('/dpi/v1/config/list', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+
+  // 新增配置
+  createConfig: (data: { key: string; value: string; remark?: string }) =>
+    request<{}>('/dpi/v1/config/create', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  // 更新配置
+  updateConfig: (id: number, data: { key: string; value: string; remark?: string }) =>
+    request<{}>(`/dpi/v1/config/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
 };
 

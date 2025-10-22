@@ -9,6 +9,10 @@ import CardList from './pages/CardList';
 import CardApplyList from './pages/CardApplyList';
 import UserKycList from './pages/UserKycList';
 import AdminList from './pages/AdminList';
+import WalletLogList from './pages/WalletLogList';
+import WithdrawList from './pages/WithdrawList';
+import DepositList from './pages/DepositList';
+import ConfigList from './pages/ConfigList';
 import { authUtils } from './utils/auth';
 
 // 路由守卫组件
@@ -37,6 +41,10 @@ const App: React.FC = () => {
             <Route path="card-applys" element={<CardApplyList />} />
             <Route path="user-kycs" element={<UserKycList />} />
             <Route path="admins" element={<AdminList />} />
+            <Route path="wallet-logs" element={<WalletLogList />} />
+            <Route path="withdraws" element={<WithdrawList />} />
+            <Route path="deposits" element={<DepositList />} />
+            <Route path="configs" element={<ConfigList />} />
           </Route>
         </Routes>
       </BrowserRouter>

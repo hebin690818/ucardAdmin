@@ -11,6 +11,10 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  WalletOutlined,
+  DollarOutlined,
+  PlusOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import { authUtils } from '../utils/auth';
 import './MainLayout.css';
@@ -49,6 +53,26 @@ const MainLayout: React.FC = () => {
       key: '/admins',
       icon: <TeamOutlined />,
       label: '管理员列表',
+    },
+    {
+      key: '/wallet-logs',
+      icon: <WalletOutlined />,
+      label: '钱包交易记录',
+    },
+    {
+      key: '/withdraws',
+      icon: <DollarOutlined />,
+      label: '提现记录',
+    },
+    {
+      key: '/deposits',
+      icon: <PlusOutlined />,
+      label: '充值记录',
+    },
+    {
+      key: '/configs',
+      icon: <SettingOutlined />,
+      label: '系统配置',
     },
   ];
 

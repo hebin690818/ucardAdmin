@@ -1,5 +1,5 @@
 .main-layout {
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .sider {
@@ -70,8 +70,10 @@
 }
 
 .content {
-  margin: 24px;
-  min-height: calc(100vh - 112px);
+  padding: 24px;
+  height: calc(100vh - 64px);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .content-wrapper {
@@ -79,6 +81,30 @@
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
+/* 表格容器样式 */
+.table-container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-wrapper {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+}
+
+/* 搜索栏样式 */
+.search-bar {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}

@@ -1,20 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Tag, Input, Modal, Form, message, Select } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
-import type { Admin, AdminListRequest } from '../types';
-import { api } from '../utils/request';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Space,
+  Tag,
+  Input,
+  Modal,
+  Form,
+  message,
+  Select,
+} from "antd";
+import type { ColumnsType } from "antd/es/table";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import type { Admin, AdminListRequest } from "../types";
+import { api } from "../utils/request";
 
 const { Search } = Input;
 
 const AdminList: React.FC = () => {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null);
   const [form] = Form.useForm();
-  
+
   // 分页状态
   const [pagination, setPagination] = useState({
     current: 1,
@@ -25,9 +40,13 @@ const AdminList: React.FC = () => {
   // 加载管理员数据
   useEffect(() => {
     loadAdmins();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, searchText]);
 
   const loadAdmins = async () => {
+    await loadAdminsWithSearch(searchText);
+  };
+
+  const loadAdminsWithSearch = async (searchValue: string) => {
     setLoading(true);
     try {
       // 构建查询参数
@@ -35,35 +54,23 @@ const AdminList: React.FC = () => {
         columns: [],
         limit: pagination.pageSize,
         page: pagination.current - 1, // API从0开始
-        sort: 'id',
+        sort: "id",
       };
 
       // 如果有搜索条件，添加搜索列
-      if (searchText.trim()) {
+      if (searchValue && searchValue.trim()) {
         queryData.columns = [
           {
-            exp: 'like',
-            logic: 'or',
-            name: 'username',
-            value: searchText.trim(),
-          },
-          {
-            exp: 'like',
-            logic: 'or',
-            name: 'email',
-            value: searchText.trim(),
-          },
-          {
-            exp: 'like',
-            logic: 'or',
-            name: 'role',
-            value: searchText.trim(),
+            exp: "like",
+            logic: "or",
+            name: "username",
+            value: searchValue.trim(),
           },
         ];
       }
 
       const response = await api.getAdminList(queryData);
-      
+
       console.log(response);
       // 转换数据格式
       const adminList: Admin[] = response.admins.map((item: any) => ({
@@ -71,20 +78,20 @@ const AdminList: React.FC = () => {
         username: item.username,
         email: item.email,
         role: item.role,
-        status: item.status === 1 ? 'active' : 'inactive',
+        status: item.status === 1 ? "active" : "inactive",
         lastLogin: item.lastLogin,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
       }));
 
       setAdmins(adminList);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: response.total,
       }));
     } catch (error) {
-      message.error('获取管理员列表失败');
-      console.error('Load admins error:', error);
+      message.error("获取管理员列表失败");
+      console.error("Load admins error:", error);
     } finally {
       setLoading(false);
     }
@@ -93,69 +100,61 @@ const AdminList: React.FC = () => {
   // 表格列配置
   const columns: ColumnsType<Admin> = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
       width: 80,
     },
     {
-      title: '用户名',
-      dataIndex: 'username',
-      key: 'username',
+      title: "用户名",
+      dataIndex: "username",
+      key: "username",
       width: 120,
     },
     {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
-      width: 200,
-    },
-    {
-      title: '角色',
-      dataIndex: 'role',
-      key: 'role',
-      width: 120,
-      render: (role: string) => {
-        const roleConfig = {
-          'super_admin': { color: 'red', text: '超级管理员' },
-          'admin': { color: 'blue', text: '管理员' },
-          'operator': { color: 'green', text: '操作员' },
-          'viewer': { color: 'default', text: '查看者' },
-        };
-        const config = roleConfig[role as keyof typeof roleConfig] || { color: 'default', text: role };
-        return <Tag color={config.color}>{config.text}</Tag>;
-      },
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
+      title: "状态",
+      dataIndex: "status",
+      key: "status",
       width: 100,
       render: (status: string) => (
-        <Tag color={status === 'active' ? 'success' : 'default'}>
-          {status === 'active' ? '活跃' : '禁用'}
+        <Tag color={status === "active" ? "success" : "default"}>
+          {status === "active" ? "活跃" : "禁用"}
         </Tag>
       ),
     },
     {
-      title: '最后登录',
-      dataIndex: 'lastLogin',
-      key: 'lastLogin',
+      title: "最后登录",
+      dataIndex: "lastLogin",
+      key: "lastLogin",
       width: 180,
-      render: (date: string) => date ? new Date(date).toLocaleString() : '-',
+      render: (date: string) => (date ? new Date(date).toLocaleString() : "-"),
     },
     {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      title: "创建时间",
+      dataIndex: "createdAt",
+      key: "createdAt",
       width: 180,
-      render: (date: string) => date ? new Date(date).toLocaleString() : '-',
+      render: (createdAt: string) => {
+        if (!createdAt) return "-";
+        const date = new Date(createdAt);
+        return date
+          .toLocaleString("zh-CN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+          })
+          .replace(/\//g, "-");
+      },
     },
     {
-      title: '操作',
-      key: 'action',
+      title: "操作",
+      key: "action",
       width: 180,
-      fixed: 'right',
+      fixed: "right",
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -180,8 +179,16 @@ const AdminList: React.FC = () => {
 
   // 搜索功能
   const handleSearch = () => {
-    setPagination(prev => ({ ...prev, current: 1 }));
-    loadAdmins();
+    setPagination((prev) => ({ ...prev, current: 1 }));
+    loadAdminsWithSearch(searchText);
+  };
+
+  // 清除搜索
+  const handleClear = () => {
+    setSearchText("");
+    setPagination((prev) => ({ ...prev, current: 1 }));
+    // 直接调用loadAdminsWithSearch，传入空的搜索文本
+    loadAdminsWithSearch("");
   };
 
   const handleAdd = () => {
@@ -198,18 +205,18 @@ const AdminList: React.FC = () => {
 
   const handleDelete = (admin: Admin) => {
     Modal.confirm({
-      title: '确认删除',
+      title: "确认删除",
       content: `确定要删除管理员 "${admin.username}" 吗？`,
-      okText: '确定',
-      cancelText: '取消',
+      okText: "确定",
+      cancelText: "取消",
       onOk: async () => {
         try {
           // TODO: 调用删除管理员API
           // await api.deleteAdmin(admin.id);
           setAdmins(admins.filter((a) => a.id !== admin.id));
-          message.success('删除成功');
+          message.success("删除成功");
         } catch (error) {
-          message.error('删除失败');
+          message.error("删除失败");
         }
       },
     });
@@ -226,7 +233,7 @@ const AdminList: React.FC = () => {
             a.id === editingAdmin.id ? { ...a, ...values } : a
           )
         );
-        message.success('更新成功');
+        message.success("更新成功");
       } else {
         // TODO: 调用新增管理员API
         // await api.createAdmin(values);
@@ -237,11 +244,11 @@ const AdminList: React.FC = () => {
           updatedAt: new Date().toISOString(),
         };
         setAdmins([...admins, newAdmin]);
-        message.success('添加成功');
+        message.success("添加成功");
       }
       setIsModalOpen(false);
     } catch (error) {
-      console.error('表单验证失败:', error);
+      console.error("表单验证失败:", error);
     }
   };
 
@@ -255,44 +262,51 @@ const AdminList: React.FC = () => {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+    <div className="table-container">
+      <div
+        className="search-bar"
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
         <Space>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
             新增管理员
           </Button>
         </Space>
         <Search
-          placeholder="搜索用户名、邮箱或角色"
+          placeholder="搜索用户名"
           allowClear
           style={{ width: 350 }}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           onSearch={handleSearch}
+          onClear={handleClear}
           prefix={<SearchOutlined />}
         />
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={admins}
-        rowKey="id"
-        loading={loading}
-        scroll={{ x: 1200 }}
-        pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: pagination.total,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
-          pageSizeOptions: ['10', '20', '50', '100'],
-        }}
-        onChange={handleTableChange}
-      />
+      <div className="table-wrapper">
+        <Table
+          columns={columns}
+          dataSource={admins}
+          rowKey="id"
+          loading={loading}
+          scroll={{ x: 1200, y: "calc(100vh - 340px)" }}
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total, range) =>
+              `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
+            pageSizeOptions: ["10", "20", "50", "100"],
+          }}
+          onChange={handleTableChange}
+        />
+      </div>
 
       <Modal
-        title={editingAdmin ? '编辑管理员' : '新增管理员'}
+        title={editingAdmin ? "编辑管理员" : "新增管理员"}
         open={isModalOpen}
         onOk={handleModalOk}
         onCancel={() => setIsModalOpen(false)}
@@ -303,44 +317,20 @@ const AdminList: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ status: 'active', role: 'admin' }}
+          initialValues={{ status: "active", role: "admin" }}
         >
           <Form.Item
             name="username"
             label="用户名"
-            rules={[{ required: true, message: '请输入用户名' }]}
+            rules={[{ required: true, message: "请输入用户名" }]}
           >
             <Input placeholder="请输入用户名" />
           </Form.Item>
 
           <Form.Item
-            name="email"
-            label="邮箱"
-            rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' }
-            ]}
-          >
-            <Input placeholder="请输入邮箱" />
-          </Form.Item>
-
-          <Form.Item
-            name="role"
-            label="角色"
-            rules={[{ required: true, message: '请选择角色' }]}
-          >
-            <Select>
-              <Select.Option value="super_admin">超级管理员</Select.Option>
-              <Select.Option value="admin">管理员</Select.Option>
-              <Select.Option value="operator">操作员</Select.Option>
-              <Select.Option value="viewer">查看者</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
             name="status"
             label="状态"
-            rules={[{ required: true, message: '请选择状态' }]}
+            rules={[{ required: true, message: "请选择状态" }]}
           >
             <Select>
               <Select.Option value="active">活跃</Select.Option>
