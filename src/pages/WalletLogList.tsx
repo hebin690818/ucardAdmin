@@ -5,7 +5,6 @@ import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import type { WalletLog, WalletLogListRequest } from "../types";
 import { api } from "../utils/request";
 import { encodeSearchValue } from "../utils/encode";
-import dayjs from "dayjs";
 
 const { Search } = Input;
 
@@ -13,10 +12,6 @@ const WalletLogList: React.FC = () => {
   const [walletLogs, setWalletLogs] = useState<WalletLog[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [logTypeFilter, setLogTypeFilter] = useState<string>("");
-  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(
-    null
-  );
 
   // 分页状态
   const [pagination, setPagination] = useState({
@@ -28,23 +23,13 @@ const WalletLogList: React.FC = () => {
   // 加载钱包日志数据
   useEffect(() => {
     loadWalletLogs();
-  }, [
-    pagination.current,
-    pagination.pageSize,
-    searchText,
-    logTypeFilter,
-    dateRange,
-  ]);
+  }, [pagination.current, pagination.pageSize, searchText]);
 
   const loadWalletLogs = async () => {
-    await loadWalletLogsWithSearch(searchText, logTypeFilter, dateRange);
+    await loadWalletLogsWithSearch(searchText);
   };
 
-  const loadWalletLogsWithSearch = async (
-    searchValue: string,
-    logTypeValue: string,
-    dateValue: [dayjs.Dayjs, dayjs.Dayjs] | null
-  ) => {
+  const loadWalletLogsWithSearch = async (searchValue: string) => {
     setLoading(true);
     try {
       // 构建查询参数
@@ -65,32 +50,6 @@ const WalletLogList: React.FC = () => {
           logic: "or",
           name: "uid",
           value: encodeSearchValue(searchValue),
-        });
-      }
-
-      // 日志类型筛选
-      if (logTypeValue) {
-        columns.push({
-          exp: "eq",
-          logic: "and",
-          name: "logType",
-          value: encodeSearchValue(logTypeValue),
-        });
-      }
-
-      // 日期范围筛选
-      if (dateValue && dateValue[0] && dateValue[1]) {
-        columns.push({
-          exp: "gte",
-          logic: "and",
-          name: "createdAt",
-          value: encodeSearchValue(dateValue[0].format("YYYY-MM-DD")),
-        });
-        columns.push({
-          exp: "lte",
-          logic: "and",
-          name: "createdAt",
-          value: encodeSearchValue(dateValue[1].format("YYYY-MM-DD")),
         });
       }
 
@@ -235,7 +194,7 @@ const WalletLogList: React.FC = () => {
   // 搜索功能
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, current: 1 }));
-    loadWalletLogsWithSearch(searchText, logTypeFilter, dateRange);
+    loadWalletLogsWithSearch(searchText);
   };
 
   // 清除搜索
@@ -243,7 +202,7 @@ const WalletLogList: React.FC = () => {
     setSearchText("");
     setPagination((prev) => ({ ...prev, current: 1 }));
     // 直接调用loadWalletLogsWithSearch，传入空的搜索文本
-    loadWalletLogsWithSearch("", logTypeFilter, dateRange);
+    loadWalletLogsWithSearch("");
   };
 
   // 刷新数据
