@@ -150,6 +150,27 @@ const UserList: React.FC = () => {
       key: "email",
       width: 200,
     },
+    // {
+    //   title: '姓名',
+    //   dataIndex: 'name',
+    //   key: 'name',
+    //   width: 120,
+    //   render: (name: string, record: User) => name || record.username || '-',
+    // },
+    // {
+    //   title: '手机',
+    //   dataIndex: 'phone',
+    //   key: 'phone',
+    //   width: 120,
+    //   render: (phone: number) => phone || '-',
+    // },
+    // {
+    //   title: '地区',
+    //   dataIndex: 'area',
+    //   key: 'area',
+    //   width: 100,
+    //   render: (area: string) => area || '-',
+    // },
     {
       title: "姓名",
       dataIndex: "name",

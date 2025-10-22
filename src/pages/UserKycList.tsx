@@ -228,6 +228,72 @@ const UserKycList: React.FC = () => {
           .replace(/\//g, "-");
       },
     },
+    // {
+    //   title: "审核时间",
+    //   dataIndex: "reviewedAt",
+    //   key: "reviewedAt",
+    //   width: 180,
+    //   render: (date: string) => (date ? new Date(date).toLocaleString() : "-"),
+    // },
+    // {
+    //   title: "审核人",
+    //   dataIndex: "reviewer",
+    //   key: "reviewer",
+    //   width: 120,
+    //   render: (reviewer: string) => reviewer || "-",
+    // },
+    // {
+    //   title: "操作",
+    //   key: "action",
+    //   width: 300,
+    //   fixed: "right",
+    //   render: (_, record) => (
+    //     <Space size="small">
+    //       <Button
+    //         type="link"
+    //         icon={<EyeOutlined />}
+    //         onClick={() => handleView(record)}
+    //       >
+    //         查看
+    //       </Button>
+    //       {record.status === "pending" && (
+    //         <>
+    //           <Button
+    //             type="link"
+    //             icon={<CheckOutlined />}
+    //             onClick={() => handleApprove(record)}
+    //             style={{ color: "#52c41a" }}
+    //           >
+    //             通过
+    //           </Button>
+    //           <Button
+    //             type="link"
+    //             danger
+    //             icon={<CloseOutlined />}
+    //             onClick={() => handleReject(record)}
+    //           >
+    //             拒绝
+    //           </Button>
+    //         </>
+    //       )}
+    //       <Button
+    //         type="link"
+    //         icon={<EditOutlined />}
+    //         onClick={() => handleEdit(record)}
+    //       >
+    //         编辑
+    //       </Button>
+    //       <Button
+    //         type="link"
+    //         danger
+    //         icon={<DeleteOutlined />}
+    //         onClick={() => handleDelete(record)}
+    //       >
+    //         删除
+    //       </Button>
+    //     </Space>
+    //   ),
+    // },
   ];
 
   // 搜索功能
