@@ -62,24 +62,6 @@ const UserList: React.FC = () => {
           {
             exp: "like",
             logic: "or",
-            name: "name",
-            value: searchValue.trim(),
-          },
-          {
-            exp: "like",
-            logic: "or",
-            name: "email",
-            value: searchValue.trim(),
-          },
-          {
-            exp: "like",
-            logic: "or",
-            name: "userCode",
-            value: searchValue.trim(),
-          },
-          {
-            exp: "like",
-            logic: "or",
             name: "uid",
             value: searchValue.trim(),
           },
@@ -132,12 +114,6 @@ const UserList: React.FC = () => {
       width: 80,
     },
     {
-      title: "用户代码",
-      dataIndex: "userCode",
-      key: "userCode",
-      width: 120,
-    },
-    {
       title: "UID",
       dataIndex: "uid",
       key: "uid",
@@ -145,38 +121,16 @@ const UserList: React.FC = () => {
       ellipsis: true,
     },
     {
+      title: "用户代码",
+      dataIndex: "userCode",
+      key: "userCode",
+      width: 120,
+    },
+    {
       title: "邮箱",
       dataIndex: "email",
       key: "email",
       width: 200,
-    },
-    // {
-    //   title: '姓名',
-    //   dataIndex: 'name',
-    //   key: 'name',
-    //   width: 120,
-    //   render: (name: string, record: User) => name || record.username || '-',
-    // },
-    // {
-    //   title: '手机',
-    //   dataIndex: 'phone',
-    //   key: 'phone',
-    //   width: 120,
-    //   render: (phone: number) => phone || '-',
-    // },
-    // {
-    //   title: '地区',
-    //   dataIndex: 'area',
-    //   key: 'area',
-    //   width: 100,
-    //   render: (area: string) => area || '-',
-    // },
-    {
-      title: "姓名",
-      dataIndex: "name",
-      key: "name",
-      width: 120,
-      render: (name: string, record: User) => name || record.username || "-",
     },
     {
       title: "手机",
@@ -215,17 +169,19 @@ const UserList: React.FC = () => {
       key: "createdAt",
       width: 180,
       render: (createdAt: string) => {
-        if (!createdAt) return '-';
+        if (!createdAt) return "-";
         const date = new Date(createdAt);
-        return date.toLocaleString('zh-CN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false
-        }).replace(/\//g, '-');
+        return date
+          .toLocaleString("zh-CN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+          })
+          .replace(/\//g, "-");
       },
     },
     {
@@ -268,7 +224,6 @@ const UserList: React.FC = () => {
     // 直接调用loadUsersWithSearch，传入空的搜索文本
     loadUsersWithSearch("");
   };
-
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
@@ -334,7 +289,7 @@ const UserList: React.FC = () => {
     <div className="table-container">
       <div className="search-bar">
         <Search
-          placeholder="搜索姓名、邮箱、用户代码或UID"
+          placeholder="搜索UID"
           allowClear
           style={{ width: 350 }}
           value={searchText}
